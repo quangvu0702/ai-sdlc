@@ -406,7 +406,7 @@ EOF
 - Consumes: `createGame()`, `placeMark(game, index)` from Tasks 1–3
 - Produces: `newGame():` same shape as `createGame()` — empty Board, `turn === "X"`, `outcome === "playing"`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add this import and test to `tic-tac-toe/game.test.js`. Change the import line to:
 
@@ -429,13 +429,13 @@ test('newGame after a finished game returns an empty playing board with X turn',
 
 Keep `play` and every earlier test in the file unchanged.
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: FAIL — `newGame` is not exported / not a function.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Add to `tic-tac-toe/game.js` (do not change `createGame`, `placeMark`, `outcomeFor`, or `LINES`):
 
@@ -445,13 +445,13 @@ export function newGame() {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (all tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tic-tac-toe/game.js tic-tac-toe/game.test.js
