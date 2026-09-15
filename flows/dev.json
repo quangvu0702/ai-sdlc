@@ -1,0 +1,29 @@
+{
+    "steps": [
+        {
+            "name": "Get Jira/Requirements",
+            "description": "Use the Jira integration to get the requirements from Jira, or the user can key them directly in the prompt.",
+            "prompt": "If the input is a Jira key, use the $twg-jira skill (via the root $twg skill) to fetch the issue; if the twg CLI is unavailable, fall back to the Atlassian MCP (getJiraIssue). If the input is free text, use it as the requirements. If there is no input, ask the user for a Jira key or a description. Write the requirements as-is to ./docs/sdlc/<slug>/requirements.md, then summarise them back to the user and confirm they are correct before moving on."
+        },
+        {
+            "name": "Plan",
+            "description": "Ideas stop waiting for someone to write them up. Intent is captured once, in the originator's own words, as a version-controlled artifact the next stage can act on.",
+            "prompt": "Use the $grill-with-docs skill to capture the intent behind the requirements. Write the captured intent to ./docs/sdlc/<slug>/intent.md. Score the plan against the $karpathy-guidelines skill on a scale of 1-10, showing the score per guideline (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution) with a one-line reason each. If the total is below 8, tell the user what to improve and ask them to revise. Repeat until the score is 8 or higher or the user says 'approved'."
+        },
+        {
+            "name": "Design",
+            "description": "Requirements and design collapse into one session. Policy is applied while the spec is written, not discovered in a review weeks later.",
+            "prompt": "Using the intent from the Plan step, run the $brainstorming skill to design the solution. Respect its approval gate. Write the spec to ./docs/sdlc/<slug>/spec.md (this path overrides the skill's default spec location). If brainstorming hands off to $writing-plans, save the implementation plan to ./docs/sdlc/<slug>/plan.md; otherwise write a short plan there yourself. Do not create a second plan document anywhere else."
+        },
+        {
+            "name": "Build",
+            "description": "Nothing is implemented without an accepted plan. Institutional knowledge becomes files the agent reads, and the guardrails run as code rather than as habits.",
+            "prompt": "Use the $executing-plan skill o execute in a separate session with review checkpoints. Based on the complexity of the task, suggest which agent from .cursor/agents/ should implement it (e.g. grok-implementer for code and tests, sol-orchestrator for large multi-part plans) and ask the user to confirm before delegating via the Task tool. Implement the tasks in ./docs/sdlc/<slug>/plan.md in order, following $test-driven-development, and commit after each task."
+        },
+        {
+            "name": "Review",
+            "description": "Review the implementation against the repo's standards and against the spec to ensure both are correct.",
+            "prompt": "Use the $code-review skill. Fixed point: the base branch recorded in the Build step. Spec: ./docs/sdlc/<slug>/spec.md. Report the Standards and Spec findings side by side. For each finding, ask the user whether to fix it now, defer it, or dismiss it; fix approved items in the worktree and commit."
+        }
+    ]
+}

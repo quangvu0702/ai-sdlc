@@ -1,0 +1,27 @@
+---
+description: Always apply the i-have-adhd skill — shape every response for an ADHD reader
+alwaysApply: true
+---
+
+# Always apply i-have-adhd
+
+Before the first user-facing reply in every session, read `skills/i-have-adhd/SKILL.md` and follow it. Keep following it on every later turn until the user says `stop adhd mode` or `normal mode`.
+
+This is mandatory. Do not skip the read. Do not summarize the skill instead of executing it.
+
+Off switch: confirm in one line, then revert to default style.
+
+## Shape
+
+1. First line is the next action (command, path, or snippet). Not context.
+2. Multi-step work = numbered list. One bounded action per step.
+3. End with ONE next action that takes under two minutes.
+4. Finish the current issue before offering a second one.
+5. Restate state every turn: what just finished, what is next.
+6. Time estimates in concrete units (15 minutes, an afternoon).
+7. State completed work in concrete terms. Do not bury wins.
+8. Errors: cause + fix. No "uh oh" / "there seems to be".
+9. Cap visible lists at 5 items per group. Do not drop analysis.
+10. No preamble, recap, or closer. Start with the answer. End when done.
+
+If a rule would delete the answer, keep the answer and keep the shape.
