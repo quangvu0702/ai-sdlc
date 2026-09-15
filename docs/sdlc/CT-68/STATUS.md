@@ -32,3 +32,7 @@ Play: `cd tic-tac-toe && npm start` — not `file://`.
 Two-axis review vs `main` and `docs/sdlc/CT-68/spec.md`.
 Fixed: full-board win test (`371e27c`), draw no-op test (`e8c3910`), `newGame` alias (`852d54c`).
 Dismissed: none. Verified: `npm test` → 12 pass, 0 fail.
+
+## Finish — done 2026-09-15
+Merged `ct-68-tic-tac-toe` into `main` locally (`3cde31b`). Post-merge tests: 12 pass, 0 fail.
+Worktree removed. Feature branch deleted.
