@@ -74,7 +74,8 @@ test('full board with no line is a draw', () => {
 });
 
 test('full board that completes a line is a win not a draw', () => {
-  const game = play([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+  const game = play([0, 1, 2, 3, 4, 5, 7, 6, 8]);
+  assert.ok(game.board.every((cell) => cell !== null));
   assert.equal(game.outcome, 'X');
   assert.notEqual(game.outcome, 'draw');
 });
