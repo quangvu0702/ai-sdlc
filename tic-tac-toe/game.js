@@ -40,7 +40,4 @@ export function placeMark(game, index) {
   };
 }
 
-
-export function newGame() {
-  return createGame();
-}
+export const newGame = createGame;
