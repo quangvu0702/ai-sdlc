@@ -3,7 +3,7 @@
         {
             "name": "Get Jira/Requirements",
             "description": "Use the Jira integration to get the requirements from Jira, or the user can key them directly in the prompt.",
-            "prompt": "If the input is a Jira key, use the $twg-jira skill (via the root $twg skill) to fetch the issue; if the twg CLI is unavailable, fall back to the Atlassian MCP (getJiraIssue). If the input is free text, use it as the requirements. If there is no input, ask the user for a Jira key or a description. Write the requirements as-is to ./docs/sdlc/<slug>/requirements.md, then summarise them back to the user and confirm they are correct before moving on."
+            "prompt": "If the input is a Jira key, use the Atlassian MCP (getJiraIssue) to fetch the issue. If the input is free text, use it as the requirements. If there is no input, ask the user for a Jira key or a description. Write the requirements as-is to ./docs/sdlc/<slug>/requirements.md, then summarise them back to the user and confirm they are correct before moving on."
         },
         {
             "name": "Plan",
@@ -16,14 +16,24 @@
             "prompt": "Using the intent from the Plan step, run the $brainstorming skill to design the solution. Respect its approval gate. Write the spec to ./docs/sdlc/<slug>/spec.md (this path overrides the skill's default spec location). If brainstorming hands off to $writing-plans, save the implementation plan to ./docs/sdlc/<slug>/plan.md; otherwise write a short plan there yourself. Do not create a second plan document anywhere else."
         },
         {
-            "name": "Build",
-            "description": "Nothing is implemented without an accepted plan. Institutional knowledge becomes files the agent reads, and the guardrails run as code rather than as habits.",
-            "prompt": "Use the $executing-plan skill o execute in a separate session with review checkpoints. Based on the complexity of the task, suggest which agent from .cursor/agents/ should implement it (e.g. grok-implementer for code and tests, sol-orchestrator for large multi-part plans) and ask the user to confirm before delegating via the Task tool. Implement the tasks in ./docs/sdlc/<slug>/plan.md in order, following $test-driven-development, and commit after each task."
+            "name": "Sync to Jira",
+            "description": "For every tasks in the plan, sync the task to Jira as a subtask of the parent issue.",
+            "prompt": "Use the Atlassian MCP (createSubtask) to create a subtask for each task in the plan."
         },
         {
-            "name": "Review",
+            "name": "Build",
+            "description": "Nothing is implemented without an accepted plan. Institutional knowledge becomes files the agent reads, and the guardrails run as code rather than as habits.",
+            "prompt": "Use the $executing-plan skill o execute in a separate session with review checkpoints. Based on the complexity of the task, suggest which LLM models fit to use for code and tests and ask the user to confirm before delegating via the Task tool. Implement the tasks in ./docs/sdlc/<slug>/plan.md in order, following $test-driven-development, and commit after each task."
+        },
+        {
+            "name": "Local Review",
             "description": "Review the implementation against the repo's standards and against the spec to ensure both are correct.",
             "prompt": "Use the $code-review skill. Fixed point: the base branch recorded in the Build step. Spec: ./docs/sdlc/<slug>/spec.md. Report the Standards and Spec findings side by side. For each finding, ask the user whether to fix it now, defer it, or dismiss it; fix approved items in the worktree and commit."
+        },
+        {
+            "name": "Push to Remote & Fix Issues",
+            "description": "Push the implementation to the remote repository and fix any issues that arise.",
+            "prompt": "commit the changes to the remote repository and fix any issues that arise by using the $babysit skill."
         }
     ]
 }
