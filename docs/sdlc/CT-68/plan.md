@@ -122,7 +122,7 @@ EOF
 - Consumes: `createGame()` from Task 1
 - Produces: `placeMark(game, index): game`. Legal: new object, new `board`, Cell set to `game.turn`, `turn` flipped, `outcome` still `"playing"` for a non-winning placement. Illegal (occupied, index not an integer 0–8, or `outcome !== "playing"`): same object, no throw.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `tic-tac-toe/game.test.js` (keep the existing import of `createGame`; add `placeMark`):
 
@@ -166,13 +166,13 @@ test('placeMark with out-of-range index returns the same object', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: FAIL — `placeMark` is not exported / not a function.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Replace `tic-tac-toe/game.js` with:
 
@@ -201,13 +201,13 @@ export function placeMark(game, index) {
 
 Do not add Win/Draw detection yet. Task 3 tests will force that.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (all tests so far).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tic-tac-toe/game.js tic-tac-toe/game.test.js
