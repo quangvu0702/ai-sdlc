@@ -475,7 +475,7 @@ EOF
 - Consumes: `createGame()`, `placeMark(game, index)`, `newGame()` from `./game.js`
 - Produces: page that renders one Game: nine `<button data-index>` Cells, `#status`, `#new-game`
 
-- [ ] **Step 1: Create `tic-tac-toe/index.html`**
+- [x] **Step 1: Create `tic-tac-toe/index.html`**
 
 ```html
 <!DOCTYPE html>
@@ -514,7 +514,7 @@ EOF
 </html>
 ```
 
-- [ ] **Step 2: Create `tic-tac-toe/ui.js`**
+- [x] **Step 2: Create `tic-tac-toe/ui.js`**
 
 ```js
 import { createGame, placeMark, newGame } from './game.js';
@@ -555,13 +555,13 @@ render();
 
 Status strings must be `X's turn`, `O's turn`, `X wins`, `O wins`, `Draw`. No `alert`. No `console` on illegal clicks.
 
-- [ ] **Step 3: Run tests to verify they still pass**
+- [x] **Step 3: Run tests to verify they still pass**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (unchanged `game.js` tests).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tic-tac-toe/index.html tic-tac-toe/ui.js
