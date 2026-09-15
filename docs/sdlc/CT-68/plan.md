@@ -45,7 +45,7 @@
 - Consumes: nothing
 - Produces: `createGame(): { board: (null|"X"|"O")[], turn: "X"|"O", outcome: "playing"|"X"|"O"|"draw" }` with `board` length 9, all `null`, `turn === "X"`, `outcome === "playing"`
 
-- [ ] **Step 1: Create `tic-tac-toe/package.json`**
+- [x] **Step 1: Create `tic-tac-toe/package.json`**
 
 ```json
 {
@@ -59,7 +59,7 @@
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 ```js
 import { test } from 'node:test';
@@ -74,13 +74,13 @@ test('createGame returns empty board, X turn, playing', () => {
 });
 ```
 
-- [ ] **Step 3: Run test to verify it fails**
+- [x] **Step 3: Run test to verify it fails**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: FAIL with `ERR_MODULE_NOT_FOUND` for `./game.js` (file missing).
 
-- [ ] **Step 4: Write minimal implementation**
+- [x] **Step 4: Write minimal implementation**
 
 ```js
 export function createGame() {
@@ -92,13 +92,13 @@ export function createGame() {
 }
 ```
 
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (1 test).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add tic-tac-toe/package.json tic-tac-toe/game.js tic-tac-toe/game.test.js
@@ -122,7 +122,7 @@ EOF
 - Consumes: `createGame()` from Task 1
 - Produces: `placeMark(game, index): game`. Legal: new object, new `board`, Cell set to `game.turn`, `turn` flipped, `outcome` still `"playing"` for a non-winning placement. Illegal (occupied, index not an integer 0–8, or `outcome !== "playing"`): same object, no throw.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `tic-tac-toe/game.test.js` (keep the existing import of `createGame`; add `placeMark`):
 
@@ -166,13 +166,13 @@ test('placeMark with out-of-range index returns the same object', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: FAIL — `placeMark` is not exported / not a function.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Replace `tic-tac-toe/game.js` with:
 
@@ -201,13 +201,13 @@ export function placeMark(game, index) {
 
 Do not add Win/Draw detection yet. Task 3 tests will force that.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (all tests so far).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tic-tac-toe/game.js tic-tac-toe/game.test.js
@@ -233,7 +233,7 @@ EOF
 
 Winning Lines: `[0,1,2]`, `[3,4,5]`, `[6,7,8]`, `[0,3,6]`, `[1,4,7]`, `[2,5,8]`, `[0,4,8]`, `[2,4,6]`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 The file must be the Task 2 tests plus the following (full file so this task can be implemented alone):
 
@@ -320,13 +320,13 @@ test('full board that completes a line is a win not a draw', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: FAIL — row-win test: `outcome` is `'playing'`, expected `'X'`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Replace `tic-tac-toe/game.js` with:
 
@@ -376,13 +376,13 @@ export function placeMark(game, index) {
 
 Win is checked before Draw inside `outcomeFor`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (all tests so far).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tic-tac-toe/game.js tic-tac-toe/game.test.js
@@ -406,7 +406,7 @@ EOF
 - Consumes: `createGame()`, `placeMark(game, index)` from Tasks 1–3
 - Produces: `newGame():` same shape as `createGame()` — empty Board, `turn === "X"`, `outcome === "playing"`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add this import and test to `tic-tac-toe/game.test.js`. Change the import line to:
 
@@ -429,13 +429,13 @@ test('newGame after a finished game returns an empty playing board with X turn',
 
 Keep `play` and every earlier test in the file unchanged.
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: FAIL — `newGame` is not exported / not a function.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Add to `tic-tac-toe/game.js` (do not change `createGame`, `placeMark`, `outcomeFor`, or `LINES`):
 
@@ -445,13 +445,13 @@ export function newGame() {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (all tests).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tic-tac-toe/game.js tic-tac-toe/game.test.js
@@ -475,7 +475,7 @@ EOF
 - Consumes: `createGame()`, `placeMark(game, index)`, `newGame()` from `./game.js`
 - Produces: page that renders one Game: nine `<button data-index>` Cells, `#status`, `#new-game`
 
-- [ ] **Step 1: Create `tic-tac-toe/index.html`**
+- [x] **Step 1: Create `tic-tac-toe/index.html`**
 
 ```html
 <!DOCTYPE html>
@@ -514,7 +514,7 @@ EOF
 </html>
 ```
 
-- [ ] **Step 2: Create `tic-tac-toe/ui.js`**
+- [x] **Step 2: Create `tic-tac-toe/ui.js`**
 
 ```js
 import { createGame, placeMark, newGame } from './game.js';
@@ -555,13 +555,13 @@ render();
 
 Status strings must be `X's turn`, `O's turn`, `X wins`, `O wins`, `Draw`. No `alert`. No `console` on illegal clicks.
 
-- [ ] **Step 3: Run tests to verify they still pass**
+- [x] **Step 3: Run tests to verify they still pass**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (unchanged `game.js` tests).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add tic-tac-toe/index.html tic-tac-toe/ui.js
