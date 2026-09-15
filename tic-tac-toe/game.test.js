@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createGame, placeMark } from './game.js';
+import { createGame, placeMark, newGame } from './game.js';
 
 function play(indexes) {
   let game = createGame();
@@ -77,4 +77,14 @@ test('full board that completes a line is a win not a draw', () => {
   const game = play([0, 1, 2, 3, 4, 5, 6, 7, 8]);
   assert.equal(game.outcome, 'X');
   assert.notEqual(game.outcome, 'draw');
+});
+
+
+test('newGame after a finished game returns an empty playing board with X turn', () => {
+  const won = play([0, 3, 1, 4, 2]);
+  const fresh = newGame();
+  assert.notEqual(fresh, won);
+  assert.deepEqual(fresh.board, [null, null, null, null, null, null, null, null, null]);
+  assert.equal(fresh.turn, 'X');
+  assert.equal(fresh.outcome, 'playing');
 });

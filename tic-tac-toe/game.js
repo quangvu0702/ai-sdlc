@@ -39,3 +39,7 @@ export function placeMark(game, index) {
     outcome,
   };
 }
+
+export function newGame() {
+  return createGame();
+}
