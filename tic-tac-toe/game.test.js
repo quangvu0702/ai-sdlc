@@ -2,6 +2,14 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createGame, placeMark } from './game.js';
 
+function play(indexes) {
+  let game = createGame();
+  for (const index of indexes) {
+    game = placeMark(game, index);
+  }
+  return game;
+}
+
 test('createGame returns empty board, X turn, playing', () => {
   const game = createGame();
   assert.deepEqual(game.board, [null, null, null, null, null, null, null, null, null]);
@@ -34,4 +42,39 @@ test('placeMark with out-of-range index returns the same object', () => {
   assert.equal(placeMark(start, 9), start);
   assert.equal(placeMark(start, 1.5), start);
   assert.deepEqual(start.board, [null, null, null, null, null, null, null, null, null]);
+});
+
+test('three in a row is a win for that player', () => {
+  const game = play([0, 3, 1, 4, 2]);
+  assert.equal(game.outcome, 'X');
+  assert.equal(game.turn, 'X');
+});
+
+test('three in a column is a win for that player', () => {
+  const game = play([0, 1, 3, 2, 6]);
+  assert.equal(game.outcome, 'X');
+});
+
+test('three on a diagonal is a win for that player', () => {
+  const game = play([0, 1, 4, 2, 8]);
+  assert.equal(game.outcome, 'X');
+});
+
+test('placeMark after a win returns the same object', () => {
+  const won = play([0, 3, 1, 4, 2]);
+  const again = placeMark(won, 8);
+  assert.equal(again, won);
+  assert.equal(won.board[8], null);
+});
+
+test('full board with no line is a draw', () => {
+  const game = play([0, 1, 2, 4, 3, 5, 7, 6, 8]);
+  assert.equal(game.outcome, 'draw');
+  assert.deepEqual(game.board, ['X', 'O', 'X', 'X', 'O', 'O', 'O', 'X', 'X']);
+});
+
+test('full board that completes a line is a win not a draw', () => {
+  const game = play([0, 1, 2, 3, 4, 5, 6, 7, 8]);
+  assert.equal(game.outcome, 'X');
+  assert.notEqual(game.outcome, 'draw');
 });
