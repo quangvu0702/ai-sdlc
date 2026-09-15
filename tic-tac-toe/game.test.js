@@ -67,6 +67,14 @@ test('placeMark after a win returns the same object', () => {
   assert.equal(won.board[8], null);
 });
 
+test('placeMark after a draw returns the same object', () => {
+  const drawn = play([0, 1, 2, 4, 3, 5, 7, 6, 8]);
+  assert.equal(drawn.outcome, 'draw');
+  const again = placeMark(drawn, 0);
+  assert.equal(again, drawn);
+  assert.equal(drawn.board[0], 'X');
+});
+
 test('full board with no line is a draw', () => {
   const game = play([0, 1, 2, 4, 3, 5, 7, 6, 8]);
   assert.equal(game.outcome, 'draw');
