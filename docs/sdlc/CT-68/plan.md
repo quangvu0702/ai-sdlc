@@ -233,7 +233,7 @@ EOF
 
 Winning Lines: `[0,1,2]`, `[3,4,5]`, `[6,7,8]`, `[0,3,6]`, `[1,4,7]`, `[2,5,8]`, `[0,4,8]`, `[2,4,6]`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 The file must be the Task 2 tests plus the following (full file so this task can be implemented alone):
 
@@ -320,13 +320,13 @@ test('full board that completes a line is a win not a draw', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: FAIL — row-win test: `outcome` is `'playing'`, expected `'X'`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Replace `tic-tac-toe/game.js` with:
 
@@ -376,13 +376,13 @@ export function placeMark(game, index) {
 
 Win is checked before Draw inside `outcomeFor`.
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (all tests so far).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tic-tac-toe/game.js tic-tac-toe/game.test.js
