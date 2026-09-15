@@ -45,7 +45,7 @@
 - Consumes: nothing
 - Produces: `createGame(): { board: (null|"X"|"O")[], turn: "X"|"O", outcome: "playing"|"X"|"O"|"draw" }` with `board` length 9, all `null`, `turn === "X"`, `outcome === "playing"`
 
-- [ ] **Step 1: Create `tic-tac-toe/package.json`**
+- [x] **Step 1: Create `tic-tac-toe/package.json`**
 
 ```json
 {
@@ -59,7 +59,7 @@
 }
 ```
 
-- [ ] **Step 2: Write the failing test**
+- [x] **Step 2: Write the failing test**
 
 ```js
 import { test } from 'node:test';
@@ -74,13 +74,13 @@ test('createGame returns empty board, X turn, playing', () => {
 });
 ```
 
-- [ ] **Step 3: Run test to verify it fails**
+- [x] **Step 3: Run test to verify it fails**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: FAIL with `ERR_MODULE_NOT_FOUND` for `./game.js` (file missing).
 
-- [ ] **Step 4: Write minimal implementation**
+- [x] **Step 4: Write minimal implementation**
 
 ```js
 export function createGame() {
@@ -92,13 +92,13 @@ export function createGame() {
 }
 ```
 
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
 
 Run: `cd tic-tac-toe && npm test`
 
 Expected: PASS (1 test).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add tic-tac-toe/package.json tic-tac-toe/game.js tic-tac-toe/game.test.js

@@ -1,0 +1,9 @@
+{
+  "name": "tic-tac-toe",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test game.test.js",
+    "start": "npx --yes serve ."
+  }
+}
