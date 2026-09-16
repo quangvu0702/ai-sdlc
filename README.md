@@ -15,6 +15,7 @@ You type `/sdlc CT-68`. The agent fetches the ticket, interviews you about inten
 - [Customize](#customize)
 - [Repo layout](#repo-layout)
 - [Troubleshooting](#troubleshooting)
+- [Sources](#sources)
 
 ## How it works in 30 seconds
 
@@ -198,6 +199,18 @@ install.sh                     copy the kit into another repo
 - **Agent says a skill is missing.** A `$name` in a flow prompt has no `skills/<name>/SKILL.md`. Create it or change the prompt.
 - **Lost track of a run.** Run `/sdlc resume`. It lists every `docs/sdlc/*/STATUS.md` and continues at the first step not marked `done`.
 - **Want to redo an early step.** Say `go back to <step name>` at any gate. Do not hand-edit later artifacts.
+
+## Sources
+
+Most of the skills in `skills/` are borrowed, then trimmed and adapted to fit this flow. Credit where it is due:
+
+| Upstream | License | Skills taken from it |
+|----------|---------|----------------------|
+| [obra/superpowers](https://github.com/obra/superpowers) — Jesse Vincent and the team at Prime Radiant | MIT | `brainstorming`, `writing-plans`, `executing-plans`, `subagent-driven-development`, `test-driven-development`, `systematic-debugging`, `using-git-worktrees`, `requesting-code-review`, `receiving-code-review`, `finishing-a-development-branch`, `writing-skills` |
+| [mattpocock/skills](https://github.com/mattpocock/skills) — Matt Pocock | see repo | `grill-me`, `grill-with-docs`, `domain-modeling`, `code-review` |
+| [Andrej Karpathy's notes on LLM coding pitfalls](https://x.com/karpathy/status/2015883857489522876) | — | `karpathy-guidelines` |
+
+The remaining pieces — `sdlc` (the orchestrator), `flows/dev.json`, `babysit`, `caveman`, `i-have-adhd` — are this repo's own or have no upstream we tracked. Text may have drifted from the originals; go to the upstream repos for the canonical versions.
 
 ## Contributors
 
