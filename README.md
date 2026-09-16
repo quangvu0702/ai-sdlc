@@ -33,6 +33,14 @@ Tool-specific paths are **symlinks** into `skills/`:
 
 Add or edit skills under [`skills/`](skills/) only. Do not copy skill bodies into `.cursor/`, `.claude/`, or `.agents/`.
 
+## Install into an existing repo
+
+```bash
+./install.sh /path/to/existing-repo
+```
+
+Copies `skills/` and `flows/`, wires `/sdlc` via symlinks, and leaves sample apps and run artifacts behind. Use `--force` to overwrite existing `flows/*.json`, `AGENTS.md`, `CLAUDE.md`, and the Cursor ADHD rule.
+
 ## Quick start
 
 1. Open this repo in Cursor, Claude Code, or Codex.
