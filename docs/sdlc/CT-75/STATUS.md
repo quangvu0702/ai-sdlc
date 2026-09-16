@@ -32,3 +32,8 @@ Implemented `docs/sdlc/CT-75/plan.md` inline with TDD (5 commits).
 Ruling: three-message test order fixed to newest-first — matches spec and 12-message cap test; plan had oldest-first expectation.
 Verified: `cd email-summarizer && npm test` → 19 pass, 0 fail, exit 0.
 HEAD: `7940cae` feat(email-summarizer): OpenAI-compatible summarize, CLI, and OAuth helper
+
+## Local Review — done 2026-09-16
+Two-axis review vs `main` (`af66ebd`) and `docs/sdlc/CT-75/spec.md`.
+Fixed: auth-gmail token error handling (`ce5809c`), unused GMAIL_SCOPE removed (`d7099d1`), shared OAuth helper (`1f61938`), Gmail-shaped runDigest test (`d74d1d8`).
+Dismissed: none. Verified: `npm test` → 22 pass, 0 fail.
