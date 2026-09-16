@@ -1,3 +1,5 @@
+import { postGoogleToken, tokenErrorDetail } from './google-oauth-token.js';
+
 function decodeBodyData(data) {
   if (!data) return '';
   const normalized = data.replace(/-/g, '+').replace(/_/g, '/');
@@ -37,21 +39,18 @@ export function parseGmailMessage(resource) {
 }
 
 async function fetchAccessToken({ fetchImpl, env }) {
-  const body = new URLSearchParams({
-    client_id: env.GMAIL_CLIENT_ID,
-    client_secret: env.GMAIL_CLIENT_SECRET,
-    refresh_token: env.GMAIL_REFRESH_TOKEN,
-    grant_type: 'refresh_token',
+  const { ok, status, json } = await postGoogleToken({
+    fetchImpl,
+    params: {
+      client_id: env.GMAIL_CLIENT_ID,
+      client_secret: env.GMAIL_CLIENT_SECRET,
+      refresh_token: env.GMAIL_REFRESH_TOKEN,
+      grant_type: 'refresh_token',
+    },
   });
-  const res = await fetchImpl('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-  });
-  if (!res.ok) {
-    throw new Error(`Gmail token error: ${res.status}`);
+  if (!ok) {
+    throw new Error(`Gmail token error: ${tokenErrorDetail({ status, json })}`);
   }
-  const json = await res.json();
   if (!json.access_token) {
     throw new Error('Gmail token error: missing access_token');
   }

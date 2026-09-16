@@ -1,5 +1,6 @@
 import http from 'node:http';
 import { URL } from 'node:url';
+import { postGoogleToken, tokenErrorDetail } from './google-oauth-token.js';
 
 const SCOPE = 'https://www.googleapis.com/auth/gmail.readonly';
 
@@ -24,21 +25,17 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   const redirectUri = `http://127.0.0.1:${server.address().port}`;
-  const body = new URLSearchParams({
-    code,
-    client_id: clientId,
-    client_secret: clientSecret,
-    redirect_uri: redirectUri,
-    grant_type: 'authorization_code',
+  const { ok, status, json } = await postGoogleToken({
+    params: {
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      grant_type: 'authorization_code',
+    },
   });
-  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-  });
-  const json = await tokenRes.json();
-  if (!tokenRes.ok) {
-    const detail = json.error_description ?? json.error ?? tokenRes.status;
+  if (!ok) {
+    const detail = tokenErrorDetail({ status, json });
     res.writeHead(500, { 'Content-Type': 'text/plain' });
     res.end(`Authorization failed: ${detail}\n`);
     console.error(`Gmail token error: ${detail}`);
