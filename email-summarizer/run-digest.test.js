@@ -47,6 +47,37 @@ test('three messages: one summarize call and digest stdout', async () => {
   );
 });
 
+test('gmail-shaped messages: textPlain and textHtml flow to summarize', async () => {
+  let received;
+  await runDigest({
+    gmail: fakeGmail([
+      {
+        from: 'ada@x',
+        subject: 'Plain',
+        textPlain: 'Hello plain',
+        textHtml: '<p>ignored</p>',
+        receivedAt: 2,
+      },
+      {
+        from: 'bob@x',
+        subject: 'Html',
+        textPlain: '',
+        textHtml: '<p>Hello <b>html</b></p>',
+        receivedAt: 1,
+      },
+    ]),
+    summarize: async (m) => {
+      received = m;
+      return 'S';
+    },
+  });
+  assert.equal(received.length, 2);
+  assert.equal(received[0].from, 'ada@x');
+  assert.equal(received[0].body, 'Hello plain');
+  assert.equal(received[1].from, 'bob@x');
+  assert.equal(received[1].body, 'Hello html');
+});
+
 test('twelve messages: only 10 newest go to summarize', async () => {
   const msgs = Array.from({ length: 12 }, (_, i) => ({
     from: `${i}@x`,
