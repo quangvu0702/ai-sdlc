@@ -38,8 +38,11 @@ For step k of N:
    since setup). Announce "Using <skill> to <purpose>" for each.
 3. Execute the step's `prompt` literally. The prompt is the authority for what the
    step does; this command only governs how steps are sequenced.
-4. When the step's own exit condition is met, write the outcome to
-   `docs/sdlc/<slug>/STATUS.md`:
+4. When the step's own exit condition is met, update
+   `docs/sdlc/<slug>/STATUS.md`. If the file does not exist, create it with
+   the run heading and flow. Preserve all existing step entries. Append the
+   current step's outcome, or replace that step's existing entry when re-running
+   it; never overwrite another step's history:
 
    ```
    # <slug>
@@ -48,10 +51,11 @@ For step k of N:
    <3–6 line summary, links to any artifacts produced>
    ```
 
-5. **Gate.** Summarise what the step produced and ask exactly one question:
-   "Step k (<name>) complete. Proceed to step k+1 (<next name>)?"
-   Then STOP and wait. Do not begin the next step in the same message as the
-   question, even if the answer seems obvious.
+5. **Gate.** Summarise what the step produced and ask exactly one question.
+   If k < N, ask: "Step k (<name>) complete. Proceed to step k+1 (<next name>)?"
+   If k = N, ask: "Step N (<name>) complete. Finish the flow?"
+   Then STOP and wait. Do not begin the next step or run the Finish section in
+   the same message as the question, even if the answer seems obvious.
 
 ## Rules
 
