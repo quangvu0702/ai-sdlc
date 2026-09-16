@@ -54,12 +54,12 @@ Defined in [`flows/dev.json`](flows/dev.json). Steps run **in order**. The agent
 | # | Step | What happens |
 |---|------|----------------|
 | 1 | **Get Jira/Requirements** | Fetch issue via Atlassian MCP or capture your text → `requirements.md` |
-| 2 | **Plan** | Grill intent (`grill-with-docs`) → `intent.md`, `CONTEXT.md`; score vs Karpathy guidelines |
-| 3 | **Design** | Brainstorm → approved `spec.md` and `plan.md` |
-| 4 | **Sync to Jira** | Create a Jira subtask per plan task (Atlassian MCP) |
-| 5 | **Build** | TDD implementation of `plan.md`; commit after each task |
-| 6 | **Local Review** | Two-axis review (standards + spec); fix / defer / dismiss per finding |
-| 7 | **Push to Remote & Fix Issues** | Push branch and triage CI/review with `babysit` |
+| 2 | **Intent** | Grill the *what and why* (`grill-with-docs`) → `intent.md`; glossary terms → root `CONTEXT.md`; *how* questions parked for Design |
+| 3 | **Design** | Brainstorm from `intent.md` → approved `spec.md` and `plan.md`; ADRs → `docs/adr/`; `plan.md` scored vs Karpathy guidelines (average ≥ 8) |
+| 4 | **Sync to Jira** | Create or update a Jira issue per plan task (Atlassian MCP); idempotent on re-run; keys recorded in `STATUS.md` |
+| 5 | **Build** | Worktree + feature branch; base branch recorded in `STATUS.md`; subagent-driven TDD, one commit per task |
+| 6 | **Local Review** | Two-axis review (standards + spec) against the recorded base; fix / defer / dismiss per finding |
+| 7 | **Push & Open PR** | Push branch, open PR against the base, keep it merge-ready with `babysit`; no merge |
 
 Skills referenced in prompts use a `$name` token → read [`skills/<name>/SKILL.md`](skills/). The orchestrator resolves all skills before step 1.
 
@@ -71,7 +71,7 @@ Skills referenced in prompts use a `$name` token → read [`skills/<name>/SKILL.
 - Say `stop` or `pause` to halt; the agent updates `STATUS.md` and waits.
 - To redo an earlier step, go back and re-run everything after it — do not patch downstream artifacts in place.
 
-After the last step, the agent summarizes the run and helps integrate the branch (merge, PR, or keep as-is) via `finishing-a-development-branch` when that skill is available.
+After the last step, the agent summarizes the run and runs `finishing-a-development-branch` for cleanup only (remove the worktree; delete the local branch once the PR is merged). Push and PR are owned by step 7, so Finish does not offer merge or PR again. The outcome is appended to `STATUS.md` as `## Finish`.
 
 ## Run artifacts
 
@@ -80,8 +80,8 @@ For slug `CT-68`, see [`docs/sdlc/CT-68/`](docs/sdlc/CT-68/):
 | File | Contents |
 |------|----------|
 | `requirements.md` | Raw Jira / user input |
-| `intent.md` | Captured intent and success criteria |
-| `CONTEXT.md` | Domain glossary |
+| `intent.md` | Captured intent, out-of-scope list, success criteria, open questions for Design |
+| `CONTEXT.md` | Domain glossary (CT-68 run; newer runs write to the repo root `CONTEXT.md`) |
 | `spec.md` | Approved design |
 | `plan.md` | TDD implementation plan |
 | `STATUS.md` | Step-by-step log (resume from here) |
@@ -124,7 +124,7 @@ Keep prompts as the authority for *what* a step does; the command in `.cursor/co
 ## Tips for developers
 
 - **Jira:** Connect the Atlassian plugin MCP in Cursor before runs that fetch or sync issues.
-- **Resume:** `/sdlc resume` — agent picks the run from `docs/sdlc/*/STATUS.md` and continues at the first step not marked `done`.
+- **Resume:** `/sdlc resume` — agent picks the run from `docs/sdlc/*/STATUS.md`, takes the flow from its `flow:` line, and continues at the first step not marked `done`.
 - **Isolation:** Build steps may use a git worktree (see `using-git-worktrees` skill). `.worktrees/` is gitignored.
 - **Review findings:** Local Review asks `fix`, `defer`, or `dismiss` one finding at a time — answer literally.
 - **Commits:** The agent commits during Build and after approved review fixes; you choose merge vs PR at the end.
