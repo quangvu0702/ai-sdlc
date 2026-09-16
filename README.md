@@ -1,6 +1,6 @@
 # test-ai-sdlc
 
-An AI-assisted software development lifecycle (SDLC) workflow for Cursor. Flows are JSON step lists; agents read **skills** for how to work; each run writes version-controlled artifacts under `docs/sdlc/<slug>/`.
+An AI-assisted software development lifecycle (SDLC) workflow for **Cursor**, **Claude Code**, and **Codex**. Flows are JSON step lists; agents read **skills** for how to work; each run writes version-controlled artifacts under `docs/sdlc/<slug>/`.
 
 This repo also contains a sample deliverable from a completed run: a two-player tic-tac-toe game in [`tic-tac-toe/`](tic-tac-toe/).
 
@@ -9,30 +9,34 @@ This repo also contains a sample deliverable from a completed run: a two-player 
 | Piece | Purpose |
 |-------|---------|
 | [`flows/`](flows/) | Step definitions (name, description, prompt) |
-| [`skills/`](skills/) | Reusable agent instructions (TDD, brainstorming, code review, …) |
-| [`.cursor/commands/sdlc.md`](.cursor/commands/sdlc.md) | Cursor command that orchestrates a flow |
+| [`skills/`](skills/) | Reusable agent instructions — **edit here only** |
+| [`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md) | `/sdlc` orchestrator (source of truth) |
 | [`docs/sdlc/<slug>/`](docs/sdlc/) | Per-run artifacts and progress |
+| [`CLAUDE.md`](CLAUDE.md) / [`AGENTS.md`](AGENTS.md) | Always-on instructions for Claude Code and Codex |
 
 Each run produces a traceable paper trail: requirements → intent → spec → plan → code → review.
 
+Tool-specific paths are **symlinks** into `skills/`:
+
+| Tool | Skills | `/sdlc` | Always-on |
+|------|--------|---------|-----------|
+| Cursor | [`.cursor/skills`](.cursor/skills) | [`.cursor/commands/sdlc.md`](.cursor/commands/sdlc.md) | [`.cursor/rules/simple.mdc`](.cursor/rules/simple.mdc) |
+| Claude Code | [`.claude/skills`](.claude/skills) | [`.claude/commands/sdlc.md`](.claude/commands/sdlc.md) | [`CLAUDE.md`](CLAUDE.md) |
+| Codex | [`.agents/skills`](.agents/skills) | `$sdlc` / `/sdlc` via `skills/sdlc/` | [`AGENTS.md`](AGENTS.md) |
+
 ## Prerequisites
 
-- **Cursor** with agent chat and custom commands enabled
+- **Cursor**, **Claude Code**, or **Codex** in this repo
 - **Git** for branches, commits, and worktrees during Build
 - **Node.js** (for projects that use it; the sample game uses `node --test`)
 - **Atlassian MCP** (optional but recommended) for Jira fetch and subtask sync in the `dev` flow
 
-Skills live in [`skills/`](skills/). [`.cursor/skills`](.cursor/skills) is a symlink to that folder — add or edit skills there only.
+Add or edit skills under [`skills/`](skills/) only. Do not copy skill bodies into `.cursor/`, `.claude/`, or `.agents/`.
 
 ## Quick start
 
-1. Open this repo in Cursor.
-2. Start a chat and run:
-
-   ```
-   /sdlc
-   ```
-
+1. Open this repo in Cursor, Claude Code, or Codex.
+2. Start a chat and run `/sdlc` (Codex also accepts `$sdlc`). If Claude Code is already in a session, run `/reload-skills` first.
 3. When asked, give a **Jira key** (e.g. `CT-68`), a **URL**, or a **short description** of the work.
 4. Approve each step when the agent asks: *"Step k complete. Proceed to step k+1?"*
 5. Artifacts appear under `docs/sdlc/<slug>/`. Progress is recorded in `docs/sdlc/<slug>/STATUS.md`.
@@ -63,7 +67,7 @@ Defined in [`flows/dev.json`](flows/dev.json). Steps run **in order**. The agent
 
 Skills referenced in prompts use a `$name` token → read [`skills/<name>/SKILL.md`](skills/). The orchestrator resolves all skills before step 1.
 
-**Hard rules (from the command):**
+**Hard rules (from the orchestrator):**
 
 - No application code before **Build**, and not without an approved spec and plan.
 - Do not skip, reorder, or merge steps without your explicit decision at a gate.
@@ -101,15 +105,18 @@ Layout: pure rules in `game.js`, DOM in `ui.js`, page in `index.html`.
 ## Repo layout
 
 ```text
-.cursor/
-  commands/sdlc.md    # /sdlc orchestrator
-  skills → ../skills  # symlink
-flows/
-  dev.json            # default flow
-skills/
-  */SKILL.md          # agent skills ($name in flow prompts)
-docs/sdlc/<slug>/     # per-run artifacts
-tic-tac-toe/          # example shipped code
+skills/                    # edit skills and /sdlc here only
+  sdlc/SKILL.md            # orchestrator
+  */SKILL.md
+.cursor/skills  → skills/
+.cursor/commands/sdlc.md → skills/sdlc/SKILL.md
+.claude/skills  → skills/
+.claude/commands/sdlc.md → skills/sdlc/SKILL.md
+.agents/skills  → skills/
+CLAUDE.md / AGENTS.md      # always-on for Claude Code / Codex
+flows/dev.json
+docs/sdlc/<slug>/
+tic-tac-toe/
 ```
 
 ## Add or change a flow
@@ -119,11 +126,11 @@ tic-tac-toe/          # example shipped code
 3. Reference skills as `$skill-name` (must exist under `skills/<skill-name>/SKILL.md`).
 4. Run: `/sdlc my-flow YOUR-INPUT`
 
-Keep prompts as the authority for *what* a step does; the command in `.cursor/commands/sdlc.md` only governs *sequencing and gates*.
+Keep prompts as the authority for *what* a step does; [`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md) only governs *sequencing and gates*.
 
 ## Tips for developers
 
-- **Jira:** Connect the Atlassian plugin MCP in Cursor before runs that fetch or sync issues.
+- **Jira:** Connect Atlassian MCP in the tool you are using before runs that fetch or sync issues.
 - **Resume:** `/sdlc resume` — agent picks the run from `docs/sdlc/*/STATUS.md`, takes the flow from its `flow:` line, and continues at the first step not marked `done`.
 - **Isolation:** Build steps may use a git worktree (see `using-git-worktrees` skill). `.worktrees/` is gitignored.
 - **Review findings:** Local Review asks `fix`, `defer`, or `dismiss` one finding at a time — answer literally.
@@ -131,5 +138,5 @@ Keep prompts as the authority for *what* a step does; the command in `.cursor/co
 
 ## Related docs
 
-- [`.cursor/commands/sdlc.md`](.cursor/commands/sdlc.md) — full orchestrator rules
+- [`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md) — full orchestrator rules
 - [`docs/sdlc/CT-68/STATUS.md`](docs/sdlc/CT-68/STATUS.md) — example completed run

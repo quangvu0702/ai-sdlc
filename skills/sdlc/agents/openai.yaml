@@ -1,0 +1,7 @@
+interface:
+  display_name: "SDLC"
+  short_description: "Run the AI SDLC flow with approval gates"
+  default_prompt: "Run $sdlc"
+
+policy:
+  allow_implicit_invocation: false
