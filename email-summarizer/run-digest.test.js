@@ -66,3 +66,62 @@ test('twelve messages: only 10 newest go to summarize', async () => {
   assert.equal(received[0].from, '11@x');
   assert.equal(received[9].from, '2@x');
 });
+
+test('gmail throw: stage gmail, summarize not called', async () => {
+  let called = 0;
+  const err = new Error('boom');
+  const result = await runDigest({
+    gmail: {
+      listUnreadInbox: async () => {
+        throw err;
+      },
+    },
+    summarize: async () => {
+      called += 1;
+      return 'x';
+    },
+  });
+  assert.equal(called, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.stage, 'gmail');
+  assert.equal(result.error, err);
+  assert.equal(result.stdout, undefined);
+});
+
+test('ai throw: stage ai and from/subject lines', async () => {
+  const result = await runDigest({
+    gmail: {
+      listUnreadInbox: async () => [
+        { from: 'a@x', subject: 'S1', body: 'B1', receivedAt: 1 },
+      ],
+    },
+    summarize: async () => {
+      throw new Error('down');
+    },
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.stage, 'ai');
+  assert.equal(result.stdout, 'From: a@x | Subject: S1\n');
+});
+
+test('does not call mark-read or modify on gmail', async () => {
+  const calls = [];
+  const gmail = new Proxy(
+    {
+      listUnreadInbox: async () => [
+        { from: 'a@x', subject: 'S', body: 'B', receivedAt: 1 },
+      ],
+    },
+    {
+      get(target, prop) {
+        calls.push(String(prop));
+        return target[prop];
+      },
+    },
+  );
+  await runDigest({
+    gmail,
+    summarize: async () => 'ok',
+  });
+  assert.deepEqual(calls, ['listUnreadInbox']);
+});

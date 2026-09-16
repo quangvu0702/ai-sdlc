@@ -24,17 +24,26 @@ function prepare(message) {
 }
 
 export async function runDigest({ gmail, summarize }) {
-  const listed = await gmail.listUnreadInbox({ max: 10 });
+  let listed;
+  try {
+    listed = await gmail.listUnreadInbox({ max: 10 });
+  } catch (error) {
+    return { ok: false, stage: 'gmail', error };
+  }
   const sorted = [...listed].sort((a, b) => receivedMs(b.receivedAt) - receivedMs(a.receivedAt));
   const selected = sorted.slice(0, 10).map(prepare);
   if (selected.length === 0) {
     return { ok: true, empty: true, stdout: 'No unread messages in Inbox.\n' };
   }
   const lines = selected.map((m) => `From: ${m.from} | Subject: ${m.subject}`);
-  const summary = await summarize(selected);
-  return {
-    ok: true,
-    empty: false,
-    stdout: `${summary}\n\n${lines.join('\n')}\n`,
-  };
+  try {
+    const summary = await summarize(selected);
+    return {
+      ok: true,
+      empty: false,
+      stdout: `${summary}\n\n${lines.join('\n')}\n`,
+    };
+  } catch (error) {
+    return { ok: false, stage: 'ai', error, stdout: `${lines.join('\n')}\n` };
+  }
 }
