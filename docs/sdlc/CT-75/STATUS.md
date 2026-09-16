@@ -37,3 +37,7 @@ HEAD: `7940cae` feat(email-summarizer): OpenAI-compatible summarize, CLI, and OA
 Two-axis review vs `main` (`af66ebd`) and `docs/sdlc/CT-75/spec.md`.
 Fixed: auth-gmail token error handling (`ce5809c`), unused GMAIL_SCOPE removed (`d7099d1`), shared OAuth helper (`1f61938`), Gmail-shaped runDigest test (`d74d1d8`).
 Dismissed: none. Verified: `npm test` → 22 pass, 0 fail.
+
+## Push & Open PR — done 2026-09-16
+Pushed `ct-75-email-summarizer` to origin. PR: https://github.com/GFG/ai-sdlc/pull/1 (base `main`).
+Mergeable; no CI checks configured on repo; no open review comments.
