@@ -148,3 +148,8 @@ Keep prompts as the authority for *what* a step does; [`skills/sdlc/SKILL.md`](s
 
 - [`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md) — full orchestrator rules
 - [`docs/sdlc/CT-68/STATUS.md`](docs/sdlc/CT-68/STATUS.md) — example completed run
+
+## Contributors
+
+- quy.tran
+- vu.le
