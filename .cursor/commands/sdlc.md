@@ -25,7 +25,8 @@ one step at a time, with a human approval gate between steps.
    derived from the request. Artifacts go in `docs/sdlc/<slug>/`. Wherever a step
    prompt says `<slug>`, substitute this value.
 4. If `input` is `resume`: read `docs/sdlc/*/STATUS.md`, ask which run to continue
-   if there is more than one, and start from the first step not marked `done`.
+   if there is more than one, take the flow from that file's `flow:` line (it
+   overrides the `flow` argument), and start from the first step not marked `done`.
 5. Create one todo per step. Announce the flow:
    "Running flow `<flow>` — N steps: 1. <name> … N. <name>. Artifacts: `docs/sdlc/<slug>/`."
 
@@ -74,6 +75,9 @@ For step k of N:
 ## Finish
 
 After the last step's gate is approved, print a short run summary: slug, steps
-completed, artifacts written, branch/worktree used. Then invoke
-`skills/finishing-a-development-branch/SKILL.md` to decide how the work is
-integrated (merge, PR, or cleanup).
+completed, artifacts written, branch/worktree/PR used. Then invoke
+`skills/finishing-a-development-branch/SKILL.md` for cleanup only. Integration
+(push, PR, merge) is owned by the flow's steps; if the flow already pushed or
+opened a PR, do not offer merge or PR again — only offer to remove the worktree
+and, if the PR is merged, delete the local branch. Append a `## Finish — done
+<YYYY-MM-DD>` entry to `STATUS.md` with the outcome.
