@@ -1,5 +1,3 @@
-const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly';
-
 function decodeBodyData(data) {
   if (!data) return '';
   const normalized = data.replace(/-/g, '+').replace(/_/g, '/');
