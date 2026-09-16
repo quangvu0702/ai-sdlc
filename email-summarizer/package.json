@@ -1,0 +1,10 @@
+{
+  "name": "email-summarizer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "start": "node cli.js",
+    "auth": "node auth-gmail.js"
+  }
+}
