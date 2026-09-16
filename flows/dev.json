@@ -17,13 +17,13 @@
         },
         {
             "name": "Sync to Jira",
-            "description": "For every tasks in the plan, sync the task to Jira as a subtask of the parent issue.",
-            "prompt": "Use the Atlassian MCP (createSubtask) to create a subtask for each task in the plan."
+            "description": "Sync the plan to Jira as either one standalone issue or a parent issue with subtasks.",
+            "prompt": "Use the Atlassian MCP (createJiraIssue) to sync every task in the plan to Jira. If the original input is a Jira key, reuse that issue as the parent and create one subtask for each plan task. Otherwise, if the plan contains exactly one task, create one standalone Jira issue and do not create a parent. If the plan contains multiple tasks, create one parent Jira issue from the requirements, then create one subtask for each plan task."
         },
         {
             "name": "Build",
             "description": "Nothing is implemented without an accepted plan. Institutional knowledge becomes files the agent reads, and the guardrails run as code rather than as habits.",
-            "prompt": "Use the $executing-plan skill o execute in a separate session with review checkpoints. Based on the complexity of the task, suggest which LLM models fit to use for code and tests and ask the user to confirm before delegating via the Task tool. Implement the tasks in ./docs/sdlc/<slug>/plan.md in order, following $test-driven-development, and commit after each task."
+            "prompt": "Use the $executing-plans skill to execute in a separate session with review checkpoints. Based on the complexity of the task, suggest which LLM models fit to use for code and tests and ask the user to confirm before delegating via the Task tool. Implement the tasks in ./docs/sdlc/<slug>/plan.md in order, following $test-driven-development, and commit after each task."
         },
         {
             "name": "Local Review",

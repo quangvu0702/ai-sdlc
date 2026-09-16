@@ -18,6 +18,13 @@ Approved spec: `docs/sdlc/CT-68/spec.md`.
 Implementation plan (5 TDD tasks): `docs/sdlc/CT-68/plan.md`.
 No second plan file. User confirmed the spec (`spec ok`).
 
+## Sync to Jira — done 2026-09-16
+Created 5 Subtask issues under https://gfgroup.atlassian.net/browse/CT-68 from `docs/sdlc/CT-68/plan.md`.
+MCP has no `createSubtask`; used `createJiraIssue` with `issueType: Subtask` and `parent: CT-68`.
+CT-71 Task 1 scaffold/createGame; CT-70 Task 2 placeMark; CT-72 Task 3 win/draw; CT-73 Task 4 newGame; CT-74 Task 5 browser UI.
+Parent CT-68 is Closed; subtasks created anyway. Keys are not sequential because creates ran in parallel.
+2026-09-16: CT-70–CT-74 transitioned to Closed (workflow transition id 31, name Done).
+
 ## Build — done 2026-09-15
 Base branch: `main` (`6d07b4c`).
 Worktree: `/Users/bill/Working/test-ai-sdlc/.worktrees/ct-68-tic-tac-toe`
