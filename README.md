@@ -1,139 +1,203 @@
-# test-ai-sdlc
+# ai-sdlc
 
-An AI-assisted software development lifecycle (SDLC) workflow for **Cursor**, **Claude Code**, and **Codex**. Flows are JSON step lists; agents read **skills** for how to work; each run writes version-controlled artifacts under `docs/sdlc/<slug>/`.
+A step-by-step software development lifecycle (SDLC) that an AI coding agent runs **with you, one step at a time**. Works in **Cursor**, **Claude Code**, and **Codex**.
 
-## What you get
+You type `/sdlc CT-68`. The agent fetches the ticket, interviews you about intent, designs the solution with you, builds it with tests, reviews it, and opens a pull request. After every step it stops and asks for your approval. Every step leaves a file behind, so you can resume, audit, or redo any part later.
 
-| Piece | Purpose |
-|-------|---------|
-| [`flows/`](flows/) | Step definitions (name, description, prompt) |
-| [`skills/`](skills/) | Reusable agent instructions — **edit here only** |
-| [`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md) | `/sdlc` orchestrator (source of truth) |
-| [`docs/sdlc/<slug>/`](docs/sdlc/) | Per-run artifacts and progress |
-| [`CLAUDE.md`](CLAUDE.md) / [`AGENTS.md`](AGENTS.md) | Always-on instructions for Claude Code and Codex |
+## Contents
 
-Each run produces a traceable paper trail: requirements → intent → spec → plan → code → review.
+- [How it works in 30 seconds](#how-it-works-in-30-seconds)
+- [Quick start](#quick-start)
+- [The `dev` flow, step by step](#the-dev-flow-step-by-step)
+- [What you say at each gate](#what-you-say-at-each-gate)
+- [Where the files go](#where-the-files-go)
+- [Install into your own repo](#install-into-your-own-repo)
+- [Customize](#customize)
+- [Repo layout](#repo-layout)
+- [Troubleshooting](#troubleshooting)
 
-Tool-specific paths are **symlinks** into `skills/`:
+## How it works in 30 seconds
 
-| Tool | Skills | `/sdlc` | Always-on |
-|------|--------|---------|-----------|
-| Cursor | [`.cursor/skills`](.cursor/skills) | [`.cursor/commands/sdlc.md`](.cursor/commands/sdlc.md) | [`.cursor/rules/simple.mdc`](.cursor/rules/simple.mdc) |
-| Claude Code | [`.claude/skills`](.claude/skills) | [`.claude/commands/sdlc.md`](.claude/commands/sdlc.md) | [`CLAUDE.md`](CLAUDE.md) |
-| Codex | [`.agents/skills`](.agents/skills) | `$sdlc` / `/sdlc` via `skills/sdlc/` | [`AGENTS.md`](AGENTS.md) |
+Three kinds of files do all the work:
 
-## Prerequisites
-
-- **Cursor**, **Claude Code**, or **Codex** in this repo
-- **Git** for branches, commits, and worktrees during Build
-- **Node.js** (for projects that use it)
-- **Atlassian MCP** (optional but recommended) for Jira fetch and subtask sync in the `dev` flow
-
-Add or edit skills under [`skills/`](skills/) only. Do not copy skill bodies into `.cursor/`, `.claude/`, or `.agents/`.
-
-## Install into an existing repo
-
-```bash
-./install.sh /path/to/existing-repo
+```text
+flows/dev.json            WHAT to do, in order        (7 steps, each with a prompt)
+skills/*/SKILL.md         HOW to do each step         (reusable agent instructions)
+docs/sdlc/<slug>/*.md     WHAT HAPPENED                (artifacts + STATUS.md log)
 ```
 
-Copies `skills/` and `flows/`, wires `/sdlc` via symlinks, and creates empty `docs/sdlc/` and `docs/adr/`. Use `--force` to overwrite existing `flows/*.json`, `AGENTS.md`, `CLAUDE.md`, and the Cursor ADHD rule.
+The `/sdlc` command is the **orchestrator** ([`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md)). It:
+
+1. Reads the flow file and runs the steps strictly in order.
+2. When a step prompt says `$brainstorming`, it reads `skills/brainstorming/SKILL.md` and follows it.
+3. After each step, writes the outcome to `docs/sdlc/<slug>/STATUS.md`, then **stops and asks** before continuing.
+
+```text
+ you ──► /sdlc CT-68
+            │
+            ▼
+   ┌──────────────────┐   reads    ┌────────────────┐
+   │ skills/sdlc      │──────────► │ flows/dev.json │
+   │ (orchestrator)   │            └────────────────┘
+   └────────┬─────────┘
+            │  for each step:
+            │    read the $skills the prompt names
+            │    do the step
+            │    write docs/sdlc/CT-68/STATUS.md
+            │    ask "Proceed to step k+1?"  ◄── you answer
+            ▼
+   requirements.md → intent.md → spec.md + plan.md → Jira → code → review → PR
+```
+
+The flow file is the authority for **what** each step does. The orchestrator only controls **sequencing and gates**.
 
 ## Quick start
 
 1. Open this repo in Cursor, Claude Code, or Codex.
-2. Start a chat and run `/sdlc` (Codex also accepts `$sdlc`). If Claude Code is already in a session, run `/reload-skills` first.
-3. When asked, give a **Jira key** (e.g. `CT-68`), a **URL**, or a **short description** of the work.
-4. Approve each step when the agent asks: *"Step k complete. Proceed to step k+1?"*
-5. Artifacts appear under `docs/sdlc/<slug>/`. Progress is recorded in `docs/sdlc/<slug>/STATUS.md`.
+2. Run `/sdlc` (Codex also accepts `$sdlc`). In an already-open Claude Code session run `/reload-skills` first.
+3. When asked, give a **Jira key** (`CT-68`), a **URL**, or a **one-line description** of the work.
+4. Read what the agent produced, then answer `yes` to move to the next step.
 
-### Other invocations
+Other ways to start:
 
 ```text
-/sdlc CT-68              # default dev flow, Jira issue CT-68
-/sdlc dev add login API  # free-text requirements, slug derived from text
-/sdlc resume             # continue a paused run (reads STATUS.md files)
+/sdlc CT-68                 # dev flow, Jira issue CT-68 (slug = CT-68)
+/sdlc add login API         # dev flow, free-text requirements (slug derived from text)
+/sdlc dev CT-68             # same as the first line, flow named explicitly
+/sdlc resume                # continue a paused run from its STATUS.md
 ```
 
-Only treat the first word as a flow name if `flows/<word>.json` exists; otherwise it is part of the input.
+The first word is a flow name only if `flows/<word>.json` exists. Otherwise it is part of your input.
 
-## The `dev` flow (7 steps)
+**Prerequisites**
 
-Defined in [`flows/dev.json`](flows/dev.json). Steps run **in order**. The agent stops after each step until you say to continue.
+- Cursor, Claude Code, or Codex
+- Git (branches, commits, and worktrees during Build)
+- Atlassian MCP connected, if you want Jira fetch and Jira sync (steps 1 and 4)
 
-| # | Step | What happens |
-|---|------|----------------|
-| 1 | **Get Jira/Requirements** | Fetch issue via Atlassian MCP or capture your text → `requirements.md` |
-| 2 | **Intent** | Grill the *what and why* (`grill-with-docs`) → `intent.md`; glossary terms → root `CONTEXT.md`; *how* questions parked for Design |
-| 3 | **Design** | Brainstorm from `intent.md` → approved `spec.md` and `plan.md`; ADRs → `docs/adr/`; `plan.md` scored vs Karpathy guidelines (average ≥ 8) |
-| 4 | **Sync to Jira** | Create or update a Jira issue per plan task (Atlassian MCP); idempotent on re-run; keys recorded in `STATUS.md` |
-| 5 | **Build** | Worktree + feature branch; base branch recorded in `STATUS.md`; subagent-driven TDD, one commit per task |
-| 6 | **Local Review** | Two-axis review (standards + spec) against the recorded base; fix / defer / dismiss per finding |
-| 7 | **Push & Open PR** | Push branch, open PR against the base, keep it merge-ready with `babysit`; no merge |
+## The `dev` flow, step by step
 
-Skills referenced in prompts use a `$name` token → read [`skills/<name>/SKILL.md`](skills/). The orchestrator resolves all skills before step 1.
+Defined in [`flows/dev.json`](flows/dev.json). Seven steps, always in this order. Each row says what the agent needs, what it does, and what file it leaves behind.
 
-**Hard rules (from the orchestrator):**
+| # | Step | The agent... | You get |
+|---|------|--------------|---------|
+| 1 | **Get Jira / Requirements** | Fetches the Jira issue (or takes your text), saves it verbatim, and reads it back to you. | `requirements.md` |
+| 2 | **Intent** | Interviews you about **what** and **why** only (`grill-with-docs`). Parks every **how** question for Design. Adds glossary terms to root `CONTEXT.md`. | `intent.md` |
+| 3 | **Design** | Brainstorms approaches with you, writes the spec, then a TDD plan. Records big decisions as ADRs. Scores the plan against the Karpathy guidelines and revises until the average is 8/10 or higher. | `spec.md`, `plan.md`, `docs/adr/*` |
+| 4 | **Sync to Jira** | Creates one Jira issue (or subtasks under your ticket) per plan task. Safe to re-run: existing keys are updated, not duplicated. | Jira keys in `STATUS.md` |
+| 5 | **Build** | Creates a git worktree and feature branch, then implements the plan task by task with tests first. One commit per task. | Feature branch, commits |
+| 6 | **Local Review** | Reviews the diff on two axes: repo standards and the spec. Walks you through findings one at a time: `fix`, `defer`, or `dismiss`. | Review fixes committed |
+| 7 | **Push & Open PR** | Pushes the branch, opens a PR against the base, and keeps it merge-ready (`babysit`). Never merges. | Pull request |
 
-- No application code before **Build**, and not without an approved spec and plan.
-- Do not skip, reorder, or merge steps without your explicit decision at a gate.
-- Skill-level gates (e.g. brainstorming approval) apply on top of step gates.
-- Say `stop` or `pause` to halt; the agent updates `STATUS.md` and waits.
-- To redo an earlier step, go back and re-run everything after it — do not patch downstream artifacts in place.
+After step 7 the agent prints a run summary and offers cleanup only (remove the worktree; delete the local branch once the PR is merged).
 
-After the last step, the agent summarizes the run and runs `finishing-a-development-branch` for cleanup only (remove the worktree; delete the local branch once the PR is merged). Push and PR are owned by step 7, so Finish does not offer merge or PR again. The outcome is appended to `STATUS.md` as `## Finish`.
+**Hard rules the agent follows**
 
-## Run artifacts
+- No application code before **Build**, and never without an approved `spec.md` and `plan.md`.
+- Steps are never skipped, reordered, or merged unless you decide so at a gate.
+- Facts are looked up by the agent. Only **decisions** come to you, one question at a time.
 
-For a run with slug `<slug>`, `docs/sdlc/<slug>/` contains:
+## What you say at each gate
 
-| File | Contents |
-|------|----------|
-| `requirements.md` | Raw Jira / user input |
-| `intent.md` | Captured intent, out-of-scope list, success criteria, open questions for Design |
-| `spec.md` | Approved design |
-| `plan.md` | TDD implementation plan |
-| `STATUS.md` | Step-by-step log (resume from here) |
+After every step the agent asks exactly one question, for example:
 
-The domain glossary goes to the repo root `CONTEXT.md`; ADRs go to `docs/adr/`.
+> Step 3 (Design) complete. Proceed to step 4 (Sync to Jira)?
+
+| You say | What happens |
+|---------|--------------|
+| `yes` / `proceed` | Next step starts. |
+| `stop` or `pause` | Agent marks the step `in-progress` in `STATUS.md` and stops. Come back later with `/sdlc resume`. |
+| `skip step 4` | Agent skips it. You own that decision, and it is recorded. |
+| `go back to Intent` | Agent redoes that step and **re-runs every step after it**. Downstream files are regenerated, never patched. |
+| `approved` | Used inside Intent and Design to close the interview or design loop. |
+
+## Where the files go
+
+For a run with slug `CT-68`:
+
+```text
+docs/sdlc/CT-68/
+  requirements.md     raw Jira issue or your text          (step 1)
+  intent.md           what, why, out of scope, success     (step 2)
+  spec.md             approved design                      (step 3)
+  plan.md             TDD implementation plan              (step 3)
+  STATUS.md           one dated entry per step; resume here
+
+docs/adr/             architecture decision records        (step 3)
+CONTEXT.md            domain glossary, repo root           (step 2)
+```
+
+`STATUS.md` looks like this and is what `/sdlc resume` reads:
+
+```markdown
+# CT-68
+flow: dev
+## Get Jira/Requirements — done 2026-09-15 14:56 +0700
+Fetched CT-68 from Jira. Saved to requirements.md.
+## Intent — done 2026-09-15 15:20 +0700
+...
+```
+
+## Install into your own repo
+
+```bash
+./install.sh /path/to/your-repo
+```
+
+This copies `skills/` and `flows/`, adds `CLAUDE.md` and `AGENTS.md`, wires `/sdlc` for all three tools via symlinks, and creates empty `docs/sdlc/` and `docs/adr/`. Then open your repo in your tool and run `/sdlc`.
+
+Use `--force` to overwrite existing `flows/*.json`, `CLAUDE.md`, `AGENTS.md`, and the Cursor rule.
+
+## Customize
+
+**Change what a step does.** Edit its `prompt` in [`flows/dev.json`](flows/dev.json). The prompt is the authority; nothing else needs to change.
+
+**Add a flow.**
+
+1. Copy `flows/dev.json` to `flows/my-flow.json`.
+2. Edit the `steps` array. Each step needs `name`, `description`, and `prompt`.
+3. Reference skills as `$skill-name`. Each must exist at `skills/<skill-name>/SKILL.md`.
+4. Run `/sdlc my-flow YOUR-INPUT`.
+
+**Add or edit a skill.** Work only under [`skills/`](skills/). The `.cursor/`, `.claude/`, and `.agents/` folders are symlinks into it, so never copy skill text there. See `skills/writing-skills/` for the format.
+
+**Skills used by the `dev` flow**
+
+| Skill | Used in | Purpose |
+|-------|---------|---------|
+| `grill-with-docs` | Intent | Interview until the what and why are clear |
+| `brainstorming`, `writing-plans`, `domain-modeling`, `karpathy-guidelines` | Design | Explore approaches, write spec and plan, record ADRs, score the plan |
+| `using-git-worktrees`, `subagent-driven-development`, `test-driven-development` | Build | Isolated branch, one task at a time, tests first |
+| `code-review` | Local Review | Standards and spec review in parallel |
+| `babysit`, `finishing-a-development-branch` | Push & PR, Finish | Keep the PR green, clean up |
+
+The other skills in `skills/` (`systematic-debugging`, `receiving-code-review`, `caveman`, `i-have-adhd`, ...) are available to call directly by name.
 
 ## Repo layout
 
 ```text
-skills/                    # edit skills and /sdlc here only
-  sdlc/SKILL.md            # orchestrator
-  */SKILL.md
-.cursor/skills  → skills/
-.cursor/commands/sdlc.md → skills/sdlc/SKILL.md
-.claude/skills  → skills/
-.claude/commands/sdlc.md → skills/sdlc/SKILL.md
-.agents/skills  → skills/
-CLAUDE.md / AGENTS.md      # always-on for Claude Code / Codex
-flows/dev.json
-docs/sdlc/<slug>/
-docs/adr/
+skills/                        edit skills and /sdlc here only
+  sdlc/SKILL.md                orchestrator: sequencing and gates
+  */SKILL.md                   one folder per skill
+flows/dev.json                 the 7-step dev flow
+docs/sdlc/<slug>/              per-run artifacts (created by runs)
+docs/adr/                      architecture decision records
+CLAUDE.md                      always-on instructions for Claude Code
+AGENTS.md                      always-on instructions for Codex
+install.sh                     copy the kit into another repo
+
+.cursor/skills   -> skills/    .cursor/commands/sdlc.md -> skills/sdlc/SKILL.md
+.claude/skills   -> skills/    .claude/commands/sdlc.md -> skills/sdlc/SKILL.md
+.agents/skills   -> skills/
 ```
 
-## Add or change a flow
+## Troubleshooting
 
-1. Copy [`flows/dev.json`](flows/dev.json) to `flows/my-flow.json`.
-2. Edit the `steps` array: each step needs `name`, `description`, and `prompt`.
-3. Reference skills as `$skill-name` (must exist under `skills/<skill-name>/SKILL.md`).
-4. Run: `/sdlc my-flow YOUR-INPUT`
-
-Keep prompts as the authority for *what* a step does; [`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md) only governs *sequencing and gates*.
-
-## Tips for developers
-
-- **Jira:** Connect Atlassian MCP in the tool you are using before runs that fetch or sync issues.
-- **Resume:** `/sdlc resume` — agent picks the run from `docs/sdlc/*/STATUS.md`, takes the flow from its `flow:` line, and continues at the first step not marked `done`.
-- **Isolation:** Build steps may use a git worktree (see `using-git-worktrees` skill). `.worktrees/` is gitignored.
-- **Review findings:** Local Review asks `fix`, `defer`, or `dismiss` one finding at a time — answer literally.
-- **Commits:** The agent commits during Build and after approved review fixes; you choose merge vs PR at the end.
-
-## Related docs
-
-- [`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md) — full orchestrator rules
+- **`/sdlc` is not recognised in Claude Code.** Run `/reload-skills`, or restart the session.
+- **Step 1 or 4 fails on Jira.** Connect the Atlassian MCP in your tool, or give free-text requirements instead of a key and skip step 4 at its gate.
+- **Agent says a skill is missing.** A `$name` in a flow prompt has no `skills/<name>/SKILL.md`. Create it or change the prompt.
+- **Lost track of a run.** Run `/sdlc resume`. It lists every `docs/sdlc/*/STATUS.md` and continues at the first step not marked `done`.
+- **Want to redo an early step.** Say `go back to <step name>` at any gate. Do not hand-edit later artifacts.
 
 ## Contributors
 
