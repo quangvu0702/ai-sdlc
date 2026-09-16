@@ -37,14 +37,26 @@ const server = http.createServer(async (req, res) => {
     body,
   });
   const json = await tokenRes.json();
+  if (!tokenRes.ok) {
+    const detail = json.error_description ?? json.error ?? tokenRes.status;
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end(`Authorization failed: ${detail}\n`);
+    console.error(`Gmail token error: ${detail}`);
+    server.close();
+    process.exitCode = 1;
+    return;
+  }
+  if (!json.refresh_token) {
+    res.writeHead(500, { 'Content-Type': 'text/plain' });
+    res.end('Authorization failed: no refresh_token. Try again with prompt=consent.\n');
+    console.error('No refresh_token in response. Try again with prompt=consent.');
+    server.close();
+    process.exitCode = 1;
+    return;
+  }
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('Authorization complete. You can close this tab.\n');
-  if (json.refresh_token) {
-    console.log(json.refresh_token);
-  } else {
-    console.error('No refresh_token in response. Try again with prompt=consent.');
-    process.exitCode = 1;
-  }
+  console.log(json.refresh_token);
   server.close();
 });
 
