@@ -2,8 +2,6 @@
 
 An AI-assisted software development lifecycle (SDLC) workflow for **Cursor**, **Claude Code**, and **Codex**. Flows are JSON step lists; agents read **skills** for how to work; each run writes version-controlled artifacts under `docs/sdlc/<slug>/`.
 
-This repo also contains a sample deliverable from a completed run: a two-player tic-tac-toe game in [`tic-tac-toe/`](tic-tac-toe/).
-
 ## What you get
 
 | Piece | Purpose |
@@ -28,7 +26,7 @@ Tool-specific paths are **symlinks** into `skills/`:
 
 - **Cursor**, **Claude Code**, or **Codex** in this repo
 - **Git** for branches, commits, and worktrees during Build
-- **Node.js** (for projects that use it; the sample game uses `node --test`)
+- **Node.js** (for projects that use it)
 - **Atlassian MCP** (optional but recommended) for Jira fetch and subtask sync in the `dev` flow
 
 Add or edit skills under [`skills/`](skills/) only. Do not copy skill bodies into `.cursor/`, `.claude/`, or `.agents/`.
@@ -39,7 +37,7 @@ Add or edit skills under [`skills/`](skills/) only. Do not copy skill bodies int
 ./install.sh /path/to/existing-repo
 ```
 
-Copies `skills/` and `flows/`, wires `/sdlc` via symlinks, and leaves sample apps and run artifacts behind. Use `--force` to overwrite existing `flows/*.json`, `AGENTS.md`, `CLAUDE.md`, and the Cursor ADHD rule.
+Copies `skills/` and `flows/`, wires `/sdlc` via symlinks, and creates empty `docs/sdlc/` and `docs/adr/`. Use `--force` to overwrite existing `flows/*.json`, `AGENTS.md`, `CLAUDE.md`, and the Cursor ADHD rule.
 
 ## Quick start
 
@@ -87,28 +85,17 @@ After the last step, the agent summarizes the run and runs `finishing-a-developm
 
 ## Run artifacts
 
-For slug `CT-68`, see [`docs/sdlc/CT-68/`](docs/sdlc/CT-68/):
+For a run with slug `<slug>`, `docs/sdlc/<slug>/` contains:
 
 | File | Contents |
 |------|----------|
 | `requirements.md` | Raw Jira / user input |
 | `intent.md` | Captured intent, out-of-scope list, success criteria, open questions for Design |
-| `CONTEXT.md` | Domain glossary (CT-68 run; newer runs write to the repo root `CONTEXT.md`) |
 | `spec.md` | Approved design |
 | `plan.md` | TDD implementation plan |
 | `STATUS.md` | Step-by-step log (resume from here) |
 
-## Sample application: tic-tac-toe
-
-Built during the [CT-68](docs/sdlc/CT-68/) run (Jira test ticket).
-
-```bash
-cd tic-tac-toe
-npm test    # 12 Node tests for game rules
-npm start   # static server — open the printed URL (not file://)
-```
-
-Layout: pure rules in `game.js`, DOM in `ui.js`, page in `index.html`.
+The domain glossary goes to the repo root `CONTEXT.md`; ADRs go to `docs/adr/`.
 
 ## Repo layout
 
@@ -124,7 +111,7 @@ skills/                    # edit skills and /sdlc here only
 CLAUDE.md / AGENTS.md      # always-on for Claude Code / Codex
 flows/dev.json
 docs/sdlc/<slug>/
-tic-tac-toe/
+docs/adr/
 ```
 
 ## Add or change a flow
@@ -147,7 +134,6 @@ Keep prompts as the authority for *what* a step does; [`skills/sdlc/SKILL.md`](s
 ## Related docs
 
 - [`skills/sdlc/SKILL.md`](skills/sdlc/SKILL.md) — full orchestrator rules
-- [`docs/sdlc/CT-68/STATUS.md`](docs/sdlc/CT-68/STATUS.md) — example completed run
 
 ## Contributors
 
