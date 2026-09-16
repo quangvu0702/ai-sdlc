@@ -25,7 +25,10 @@ one step at a time, with a human approval gate between steps.
 ## Setup (before step 1)
 
 1. Read `flows/<flow>.json`. Steps run strictly in array order. Each step has
-   `name`, `description`, and `prompt`.
+   `name`, `description`, and `prompt`. If the file has a `status` object, use
+   that heading format for `STATUS.md`; otherwise stamp
+   `## <step name> — done <YYYY-MM-DD HH:mm Z>` using the local timezone offset
+   (example: `2026-09-15 14:56 +0700`). Never date-only.
 2. Resolve skills. A `$name` token in a step prompt means: read
    `skills/<name>/SKILL.md` and follow it. Resolve **all** skills for **all** steps
    now. If any file is missing, list the missing ones and ask the user for a
@@ -57,7 +60,7 @@ For step k of N:
    ```
    # <slug>
    flow: <flow>
-   ## <step name> — done <YYYY-MM-DD>
+   ## <step name> — done <YYYY-MM-DD HH:mm Z>
    <3–6 line summary, links to any artifacts produced>
    ```
 
@@ -77,7 +80,7 @@ For step k of N:
 - Any skill's own hard gates (e.g. brainstorming's approval gate) apply in addition
   to the step gates here — the stricter one wins.
 - If the user says `stop` or `pause`, update `STATUS.md` with the current step
-  marked `in-progress` and a note on where you left off, then stop.
+  marked `in-progress <YYYY-MM-DD HH:mm Z>` and a note on where you left off, then stop.
 - If the user changes their mind about an earlier step, go back to that step,
   redo it, and re-run every step after it. Do not patch later artifacts in place.
 
@@ -89,4 +92,4 @@ completed, artifacts written, branch/worktree/PR used. Then invoke
 (push, PR, merge) is owned by the flow's steps; if the flow already pushed or
 opened a PR, do not offer merge or PR again — only offer to remove the worktree
 and, if the PR is merged, delete the local branch. Append a `## Finish — done
-<YYYY-MM-DD>` entry to `STATUS.md` with the outcome.
+<YYYY-MM-DD HH:mm Z>` entry to `STATUS.md` with the outcome.
